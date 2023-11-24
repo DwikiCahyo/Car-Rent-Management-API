@@ -1,0 +1,102 @@
+import { UserModel, Users } from "../model/users";
+import AuthService from "../service/auth";
+import { Express, Request, Response, NextFunction } from "express";
+import { authToken, checkEmail } from "../middleware/userAuth";
+import { isString } from "util";
+
+const TOKEN_SECRET = "ini adalah token saya yang saya test";
+
+export default class AuthController {
+  service: AuthService;
+  app: Express;
+
+  constructor(app: Express) {
+    this.app = app;
+    this.service = new AuthService();
+  }
+
+  init() {
+    this.app.post(
+      "/register",
+      (req: Request<{}, {}, Users>, res: Response, next: NextFunction) =>
+        checkEmail(req, res, next),
+      (req: Request<{}, {}, Users>, res: Response) =>
+        this.registerUser(req, res)
+    );
+    this.app.post("/login", (req: Request<{}, {}, Users>, res: Response) =>
+      this.login(req, res)
+    );
+
+    this.app.get(
+      "/whoami",
+      (req: Request, res: Response, next: NextFunction) =>
+        authToken(req, res, next),
+      (req: Request, res: Response) => this.whoAmI(req, res)
+    );
+
+    this.app.patch(
+      "/users/:id",
+      (req: Request, res: Response, next: NextFunction) =>
+        authToken(req, res, next),
+      (req: Request, res: Response) => this.updateRole(req, res)
+    );
+  }
+
+  async registerUser(req: Request<{}, {}, Users>, res: Response) {
+    try {
+      const body = req.body;
+      const user = await this.service.registerUser(body);
+      res.status(200).json({ status: 200, data: user });
+    } catch (error) {
+      const errorMssg = (error as Error).message;
+      res.locals.errorMessage = errorMssg;
+      res.status(500).json({ err: 500 });
+    }
+  }
+
+  async login(req: Request<{}, {}, Users>, res: Response) {
+    try {
+      const body = req.body;
+      const user = await this.service.loginUser(body, TOKEN_SECRET);
+      if (typeof user === "string") {
+        return res.status(403).json({ message: user });
+      }
+      res.status(200).json({ status: 200, data: user });
+    } catch (error) {
+      const errorMssg = (error as Error).message;
+      res.locals.errorMessage = errorMssg;
+      res.status(500).json({ err: 500 });
+    }
+  }
+
+  async updateRole(req: Request, res: Response) {
+    try {
+      const role = req.user?.role_id;
+      if (!(role === 1)) {
+        return res.status(403).json({ message: "Access forbiden" });
+      }
+      const id = req.params.id;
+      const body = req.body;
+      const user = await this.service.updateRole(body, id);
+      if (user instanceof UserModel) {
+        return res.status(200).json({ status: 200, data: user });
+      }
+      res.status(404).json({ message: user });
+    } catch (error) {
+      const errorMssg = (error as Error).message;
+      res.locals.errorMessage = errorMssg;
+      res.status(500).json({ err: 500 });
+    }
+  }
+
+  whoAmI(req: Request, res: Response) {
+    try {
+      const user = req.user;
+      res.status(200).json({ data: user });
+    } catch (error) {
+      const errorMssg = (error as Error).message;
+      res.locals.errorMessage = errorMssg;
+      res.status(500).json({ err: 500 });
+    }
+  }
+}
