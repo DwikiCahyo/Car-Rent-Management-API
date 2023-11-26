@@ -45,12 +45,11 @@ export default class CarController {
       "/cars/:id",
       (req: Request, res: Response, next: NextFunction) =>
         authToken(req, res, next),
+      upload.none(),
       (req: Request, res: Response) => this.updateCar(req, res)
     );
-    this.app.patch(
-      "/cars-delete/:id",
-      authToken,
-      (req: Request, res: Response) => this.deleteCar(req, res)
+    this.app.delete("/cars/:id", authToken, (req: Request, res: Response) =>
+      this.deleteCar(req, res)
     );
   }
 
@@ -67,7 +66,7 @@ export default class CarController {
     } catch (error) {
       const errorMssg = (error as Error).message;
       res.locals.errorMessage = errorMssg;
-      res.status(500).json({ err: 500 });
+      res.status(500).json({ status: 500, message: "Internal server error" });
     }
   }
 
@@ -111,7 +110,6 @@ export default class CarController {
         specs: JSON.stringify(req.body.specs),
         created_by: user,
       };
-      console.log(body);
 
       const car = await this.service.addCar(body);
       res
@@ -131,6 +129,7 @@ export default class CarController {
         return res.status(403).json({ message: "Resctricted" });
       }
 
+      console.log(req.params.id);
       const user = req.user?.id;
       const body = {
         ...req.body,
@@ -139,14 +138,15 @@ export default class CarController {
         updated_by: user,
       };
 
-      console.log(req.body);
-
       const car = await this.service.updateCar(req.params.id, body);
+
       if (typeof car === "string") {
-        return res.status(404).json({ message: car });
+        return res.status(404).json({ status: 404, message: car });
       }
 
-      res.status(200).json({ status: 200, data: car });
+      res
+        .status(200)
+        .json({ status: 200, message: "Success edit car", data: car });
     } catch (error) {
       const errorMssg = (error as Error).message;
       res.locals.errorMessage = errorMssg;
@@ -167,7 +167,7 @@ export default class CarController {
         const car = await this.service.deleteCar(paramsId, userId);
         return res.status(200).json({
           status: 200,
-          message: car,
+          message: `Success delete car ${paramsId}`,
         });
       }
     } catch (error) {

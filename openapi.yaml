@@ -1,0 +1,701 @@
+openapi: 3.0.0
+info:
+  title: Rent Car Management API Documentation
+  description: Rent car documentation api (1)
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Development Server
+paths:
+  /login:
+    post:
+      tags:
+        - Authentication
+      summary: Login
+      description: Login user and administrator
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: dwiki2@mail.com
+                password:
+                  type: string
+      responses:
+        "200":
+          description: "Success Login"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 200
+                  data:
+                    items:
+                      $ref: "#/components/schemas/Response:Login"
+        "500":
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: "Internal Server error"
+        "403":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: "User not found, please register"
+        "422":
+          description: Password not match
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: "Wrong credentials"
+
+  /register:
+    post:
+      tags:
+        - Authentication
+      summary: Register
+      description: Register user and administrator
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: dwiki2@mail.com
+                password:
+                  type: string
+      responses:
+        "200":
+          description: "Success Register"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response:Register"
+        "500":
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: "Internal Server error"
+        "403":
+          description: Email alrady exist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: "Email already exist"
+
+  /users:
+    get:
+      tags:
+        - Authentication
+      summary: Check all user (only for superadmin)
+      description: Check all user account
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "Success get all users"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Users"
+
+        "500":
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: "Internal Server error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+  /users/:id:
+    patch:
+      tags:
+        - Authentication
+      summary: Update user role (only can use if login as superadmin)
+      description: update role
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: id user
+          required: true
+          schema:
+            type: string
+            example: 4
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                role_id:
+                  type: string
+                  example: 1
+
+      responses:
+        "200":
+          description: "Success get all users"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Response:UpdateRole"
+
+        "500":
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: "Internal Server error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+        "403":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: User not found
+
+  /cars:
+    get:
+      tags:
+        - Cars
+      summary: Get list of car
+      description: get all cars
+      parameters:
+        - name: available
+          in: query
+          description: car availability
+          schema:
+            type: string
+        - name: capacity
+          in: query
+          description: car capacity
+          schema:
+            type: string
+        - name: date
+          in: query
+          description: car available date
+          schema:
+            type: string
+        - name: time
+          in: query
+          description: car available time
+          schema:
+            type: string
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 200
+                  length:
+                    type: number
+                    example: 27
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Cars"
+        "500":
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: "Internal Server error"
+    post:
+      tags:
+        - Cars
+      summary: Create new car data (only for admin and superadmin)
+      description: Create new car
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                plate:
+                  type: string
+                  example: swg-001
+                manufacture:
+                  type: string
+                  example: ford
+                model:
+                  type: string
+                  example: X00
+                image:
+                  type: string
+                  format: binary
+                  example: https://res.cloudinary.com/dekrhuwfp/image/upload/v1700800666/rent_car/car_image.jpg
+                rentPerDay:
+                  type: number
+                  example: 200000
+                capacity:
+                  type: number
+                  example: 2
+                description:
+                  type: string
+                  example: my new car
+                availableAt:
+                  type: string
+                  example: 2023-11-23T15:49:05.563Z
+                transmission:
+                  type: string
+                  example: Automatic
+                available:
+                  type: boolean
+                  example: true
+                type:
+                  type: string
+                  example: sedan
+                year:
+                  type: number
+                  example: 2023
+                options:
+                  type: array
+                specs:
+                  type: array
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: Success add car
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Cars"
+        "500":
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: "Internal Server error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+  /cars/{id}:
+    patch:
+      tags:
+        - Cars
+      summary: update car data (only for admin and superadmin)
+      description: update car data
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: car id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                plate:
+                  type: string
+                  example: swg-001-updt
+                manufacture:
+                  type: string
+                  example: ford-updt
+                model:
+                  type: string
+                  example: X00-updt
+                image:
+                  type: string
+                  example: https://res.cloudinary.com/dekrhuwfp/image/upload/v1700800666/rent_car/car_image.jpg
+                rentPerDay:
+                  type: number
+                  example: 200000
+                capacity:
+                  type: number
+                  example: 2
+                description:
+                  type: string
+                  example: my new car
+                availableAt:
+                  type: string
+                  example: 2023-11-23T15:49:05.563Z
+                transmission:
+                  type: string
+                  example: Automatic
+                available:
+                  type: boolean
+                  example: true
+                type:
+                  type: string
+                  example: sedan
+                year:
+                  type: number
+                  example: 2023
+                options:
+                  type: array
+                specs:
+                  type: array
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: Success edit car
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Cars"
+        "500":
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: "Internal Server error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+    delete:
+      tags:
+        - Cars
+      summary: delete car data (only for admin and superadmin)
+      description: delete car data
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: car id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: Success delete car {id}
+        "500":
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: "Internal Server error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Cars:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "a1be7053-11b3-404c-8c06-beaa52aab08d"
+        plate:
+          type: string
+          example: "VPT-9753"
+        manufacture:
+          type: string
+          example: "BMW"
+        model:
+          type: string
+          example: "M5"
+        image:
+          type: string
+          example: "https://res.cloudinary.com/dekrhuwfp/image/upload/v1699369634/rent_car/u3hkkw2rdwt2ddltzmoq.jpg"
+        type:
+          type: string
+          example: "Hatchback"
+        description:
+          type: string
+          example: '6.1L SRT V8 "Hemi" engine.'
+        transmission:
+          type: string
+          example: "Manual"
+        capacity:
+          type: number
+          example: 6
+        rentPerDay:
+          type: string
+          example: "900000"
+        availableAt:
+          type: string
+          example: "2023-11-22T10:13:31.431Z"
+        year:
+          type: number
+          example: 2018
+        options:
+          type: array
+          example:
+            [
+              "Alloy Wheels",
+              "Power Locks",
+              "A/C: Rear",
+              "MP3 (Single Disc)",
+              "Airbag: Driver",
+              "A/C: Front",
+              "Tinted Glass",
+              "Alloy Wheels",
+              "Alarm",
+            ]
+        specs:
+          type: array
+          example:
+            [
+              '6.1L SRT V8 "Hemi" engine',
+              "Multi-info display -inc: driving range, average MPG, current MPG, average speed, outside temp, elapsed time, maintenance & diagnostic messages",
+              "Front & rear passenger folding assist grips",
+              "Electronic throttle control system w/intelligence (ETCS-i)",
+              "Pwr tilt/slide moonroof -inc: 1-touch open/close",
+              "Acoustic glass windshield",
+            ]
+        created_by:
+          type: string
+          example: "superadmin@mail.com"
+        deleted_by:
+          type: string
+        updated_by:
+          type: string
+          example: "superadmin@mail.com"
+
+    Users:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        email:
+          type: string
+          example: darman@mail.com
+        password:
+          type: string
+          example: hashedpassword
+        roles:
+          type: string
+          example: admin
+
+    Response:UpdateRole:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        email:
+          type: string
+          example: darman@mail.com
+        password:
+          type: string
+          example: hashedpassword
+        roles_id:
+          type: number
+          example: 2
+
+    Response:Login:
+      type: object
+      properties:
+        status:
+          type: number
+          example: 9
+        email:
+          type: string
+          example: dwiki2@mail.com
+        token:
+          type: string
+          example: sasj91u2012401u0103
+
+    Response:Register:
+      type: object
+      properties:
+        status::
+          type: number
+          example: 200
+        message::
+          type: string
+          example: Success create account
+        data:
+          type: string
+          example: dwiki2@gmail.com

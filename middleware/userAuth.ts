@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { UserModel, Users } from "../model/users";
 import jwt from "jsonwebtoken";
+import { body } from "express-validator";
 
 const TOKEN_SECRET = "ini adalah token saya yang saya test";
 
@@ -15,8 +16,11 @@ export const checkEmail = async (
     const email = await UserModel.query().where("email", "=", bodyEmail);
 
     if (email.length > 0) {
-      return res.status(409).json({ message: "Email already exist" });
+      return res
+        .status(403)
+        .json({ status: 403, message: "Email already exist" });
     }
+
     next();
   } catch (error) {
     res.locals.errorMessage = (error as Error).message;
@@ -36,8 +40,6 @@ export function authToken(req: Request, res: Response, next: NextFunction) {
     if (err) {
       return res.status(403).json({ message: "Forbidden" });
     }
-
-    console.log(user);
 
     req.user = user as Users;
     next();

@@ -2,7 +2,7 @@ import { UserModel, Users } from "../model/users";
 import AuthService from "../service/auth";
 import { Express, Request, Response, NextFunction } from "express";
 import { authToken, checkEmail } from "../middleware/userAuth";
-import { isString } from "util";
+import { validationResult } from "express-validator/src/validation-result";
 
 const TOKEN_SECRET = "ini adalah token saya yang saya test";
 
@@ -46,7 +46,11 @@ export default class AuthController {
     try {
       const body = req.body;
       const user = await this.service.registerUser(body);
-      res.status(200).json({ status: 200, data: user });
+      res.status(200).json({
+        status: 200,
+        message: "Success create account",
+        data: user.email,
+      });
     } catch (error) {
       const errorMssg = (error as Error).message;
       res.locals.errorMessage = errorMssg;
@@ -59,13 +63,13 @@ export default class AuthController {
       const body = req.body;
       const user = await this.service.loginUser(body, TOKEN_SECRET);
       if (typeof user === "string") {
-        return res.status(403).json({ message: user });
+        return res.status(403).json({ status: 403, message: user });
       }
       res.status(200).json({ status: 200, data: user });
     } catch (error) {
       const errorMssg = (error as Error).message;
       res.locals.errorMessage = errorMssg;
-      res.status(500).json({ err: 500 });
+      res.status(500).json({ status: 500, message: "Internal Server Error" });
     }
   }
 
@@ -81,7 +85,7 @@ export default class AuthController {
       if (user instanceof UserModel) {
         return res.status(200).json({ status: 200, data: user });
       }
-      res.status(404).json({ message: user });
+      res.status(403).json({ status: 403, message: user });
     } catch (error) {
       const errorMssg = (error as Error).message;
       res.locals.errorMessage = errorMssg;

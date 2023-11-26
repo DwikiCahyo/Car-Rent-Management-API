@@ -4,7 +4,7 @@ import { UserModel, Users } from "../model/users";
 
 export default class AuthRepository {
   async registerUser(body: Users) {
-    const { email, password } = body;
+    const { password } = body;
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
     const reqBody = {
