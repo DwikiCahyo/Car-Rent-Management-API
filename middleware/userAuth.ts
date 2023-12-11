@@ -33,12 +33,12 @@ export function authToken(req: Request, res: Response, next: NextFunction) {
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
-    return res.sendStatus(401).json({ message: "Invalid Token" });
+    return res.status(401).json({ message: "Unauthorized" });
   }
 
   jwt.verify(token, TOKEN_SECRET, (err, user) => {
     if (err) {
-      return res.status(403).json({ message: "Forbidden" });
+      return res.status(403).json({ message: "Invalid Token" });
     }
 
     req.user = user as Users;

@@ -1,6 +1,6 @@
 import { Express, Request, Response, NextFunction } from "express";
 import CarsService from "../service/cars";
-import { Cars } from "../model/cars";
+import { Cars, CarsModel } from "../model/cars";
 import upload from "../middleware/multer";
 import cloudinary from "../middleware/cloudinary";
 import { authToken } from "../middleware/userAuth";
@@ -10,6 +10,9 @@ interface carQuery {
   capacity: number;
   date: string;
   time: string;
+  page: string;
+  pageSize: string;
+  isPaginate: string;
 }
 
 interface CarParams {
@@ -59,10 +62,44 @@ export default class CarController {
     next: NextFunction
   ) {
     try {
-      const { available, capacity, date, time } = req.query;
-      const car = await this.service.getAllCar(available, capacity, date, time);
+      const { available, capacity, date, time, page, pageSize, isPaginate } =
+        req.query;
+      const car = await this.service.getAllCar(
+        available,
+        capacity,
+        date,
+        time,
+        page,
+        pageSize,
+        isPaginate || "true"
+      );
       res.locals.data = car;
-      res.status(200).json({ status: 200, length: car.length, data: car });
+      if (isPaginate === "false") {
+        return res.status(200).json({
+          status: 200,
+          length: car.length,
+          data: car,
+        });
+      }
+
+      const pageInit = parseInt(page) || 1;
+      const pageSizeInit = parseInt(pageSize, 10) || 10;
+      const totalRecord = await CarsModel.query()
+        .where("deleted_by", null)
+        .resultSize();
+      const total = totalRecord / pageSizeInit;
+      console.log(total, totalRecord);
+
+      const totalPages = Math.ceil(totalRecord / pageSizeInit);
+
+      res.status(200).json({
+        status: 200,
+        limit: pageSizeInit || 10,
+        page: pageInit || 1,
+        totalPages: totalPages,
+        isPaginate: isPaginate,
+        data: car,
+      });
     } catch (error) {
       const errorMssg = (error as Error).message;
       res.locals.errorMessage = errorMssg;

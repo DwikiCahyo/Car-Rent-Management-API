@@ -24,23 +24,21 @@ class App {
 
   constructor(app: Express) {
     this.app = app;
+    // this.app.use(cors);
+    this.app.use(cors());
 
-    this.app.use(
-      cors({
-        origin: "http://localhost:3000",
-      })
-    );
     this.app.use("/docs", swaggerUi.serve, swaggerUi.setup(openApi));
+
     this.app.use(express.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
     Model.knex(knex(config.development));
     morgan.token("logger", (req: Request, res: Response) => logger(req, res));
     this.app.use(morgan(":status :logger"));
+    // this.app.use((req: Request, res: Response, next: NextFunction) =>
+    //   NotFoundError(req, res, next)
+    // );
     this.routes();
     this.app.use(this.routes);
-    this.app.use((req: Request, res: Response, next: NextFunction) =>
-      NotFoundError(req, res)
-    );
   }
 
   routes() {

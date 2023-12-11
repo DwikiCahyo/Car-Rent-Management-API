@@ -12,9 +12,20 @@ export default class CarsService {
     available?: string,
     capacity?: number,
     date?: string,
-    number?: string
+    number?: string,
+    page?: string,
+    pageSize?: string,
+    isPaginate?: string
   ) {
-    return await this.repository.getAllData(available, capacity, date, number);
+    return await this.repository.getAllData(
+      available,
+      capacity,
+      date,
+      number,
+      page || "1",
+      pageSize || "10",
+      isPaginate || "true"
+    );
   }
 
   async getCarById(id: string) {

@@ -1,3 +1,4 @@
+import { query } from "express";
 import { CarsModel, Cars } from "../model/cars";
 
 export default class CarsRepository {
@@ -5,11 +6,20 @@ export default class CarsRepository {
     available?: string,
     capacity?: number,
     date?: string,
-    time?: string
+    time?: string,
+    page?: string,
+    pageSize?: string,
+    isPaginate?: string
   ) {
     const parseAvailable = available === "true" ? true : false;
+    const parseIsPaginate = isPaginate === "true" ? true : false;
+    const size = parseInt(pageSize || "10") || 10;
+    const pageJ = parseInt(page || "1") || 1;
+    const offset = (pageJ - 1) * size;
+    // const paginate = isPaginate || true;
 
     let query = CarsModel.query();
+    let cars: CarsModel[];
 
     if (available) {
       query = query.where("available", "=", parseAvailable);
@@ -33,11 +43,38 @@ export default class CarsRepository {
         .orderBy("cars.availableAt");
     }
 
-    const cars = await query
+    console.log("cars paginate :", parseIsPaginate);
+
+    if (!parseIsPaginate) {
+      cars = await query
+        .where("deleted_by", null)
+        .withGraphFetched("created")
+        .withGraphFetched("updated")
+        .withGraphFetched("deleted");
+
+      const formatedCar = cars.map(
+        ({ created_by, deleted_by, updated_by, ...car }) => {
+          const data = {
+            ...car,
+            created_by: car.created?.email || null,
+            deleted_by: car.deleted?.email || null,
+            updated_by: car.updated?.email || null,
+          };
+          const { updated, deleted, created, ...cars } = data;
+          return cars;
+        }
+      );
+
+      return formatedCar;
+    }
+
+    cars = await query
       .where("deleted_by", null)
       .withGraphFetched("created")
       .withGraphFetched("updated")
-      .withGraphFetched("deleted");
+      .withGraphFetched("deleted")
+      .limit(size)
+      .offset(offset);
 
     const formatedCar = cars.map(
       ({ created_by, deleted_by, updated_by, ...car }) => {

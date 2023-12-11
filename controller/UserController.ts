@@ -18,7 +18,7 @@ export default class UserController {
         authToken(req, res, next),
       (req: Request, res: Response) => this.getAllUser(req, res)
     );
-    this.app.get("/user", (req: Request, res: Response) =>
+    this.app.get("/user", authToken, (req: Request, res: Response) =>
       this.getUser(req, res)
     );
   }
@@ -26,11 +26,12 @@ export default class UserController {
   async getAllUser(req: Request, res: Response) {
     try {
       const role = req.user?.role_id;
-      if (role === 1 || role === 2) {
-        const user = await this.service.getAllUser();
-        return res.status(200).json({ status: 200, data: user });
+      res.locals.anyMssg = "G355I";
+      if (!(role === 1 || role === 2)) {
+        return res.status(401).json({ message: "Access Unauthorized" });
       }
-      return res.status(403).json({ message: "Access forbiden" });
+      const user = await this.service.getAllUser();
+      return res.status(200).json({ status: 200, data: user });
     } catch (error) {
       const errorMssg = (error as Error).message;
       res.locals.errorMessage = errorMssg;
@@ -40,8 +41,12 @@ export default class UserController {
 
   async getUser(req: Request, res: Response) {
     try {
+      const role = req.user?.role_id;
+      if (!(role === 1 || role === 2)) {
+        return res.status(401).json({ message: "Access Unauthorized" });
+      }
       const user = await this.service.getUser();
-      res.status(200).json({ data: user });
+      return res.status(200).json({ data: user });
     } catch (error) {
       const errorMssg = (error as Error).message;
       res.locals.errorMessage = errorMssg;
