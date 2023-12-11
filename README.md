@@ -74,7 +74,16 @@ Rent car management API documentation
 
 | Body      | Description (example value) |
 | :-------- | :-------------------------- |
-| `role_id` | account role id (2)         |
+| `role_id` | account role id (2)         
+
+
+
+#### whoami (check profile account, need token to check) 
+
+```http
+  GET /whoami
+```
+
 
 #### Get all cars
 
@@ -158,3 +167,8 @@ Rent car management API documentation
 | Parameter | Type   | Description              |
 | :-------- | :----- | :----------------------- |
 | `id`      | `uuid` | use id to get car detail |
+
+#### Swagger API documentation
+```http
+  GET /docs
+```
