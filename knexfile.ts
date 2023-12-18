@@ -3,15 +3,14 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-console.log(process.env.DATABASE_DEVELOPMENT);
-console.log(process.env.CLOUD_NAME);
-
 // Update with your config settings.
+
+console.log(process.env.DATABASE_PRODUCTION);
 
 export const config: { [key: string]: Knex.Config } = {
   development: {
     client: "pg",
-    connection: process.env.DATABASE_DEVELOPMENT,
+    connection: process.env.DATABASE_PRODUCTION,
     pool: {
       min: 2,
       max: 10,
@@ -27,11 +26,7 @@ export const config: { [key: string]: Knex.Config } = {
 
   production: {
     client: "pg",
-    connection: {
-      database: process.env.DATABASE_NAME,
-      user: process.env.DATABASE_USERNAME,
-      password: process.env.DATABASE_PASSWORD,
-    },
+    connection: process.env.DATABASE_PRODUCTION,
     pool: {
       min: 2,
       max: 10,

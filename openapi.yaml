@@ -6,6 +6,8 @@ info:
 servers:
   - url: http://localhost:3000
     description: Development Server
+  - url: https://rent-car-management-api.fly.dev
+    description: Production Server
 paths:
   /login:
     post:
