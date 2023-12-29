@@ -17,6 +17,7 @@ import { NotFoundError } from "./middleware/notFound";
 dotenv.config();
 
 const openApi = yaml.load("./openapi.yaml");
+console.log(process.env.DATABASE_URL);
 
 class App {
   app: Express;
