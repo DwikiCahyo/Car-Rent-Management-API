@@ -30,6 +30,8 @@ jobs:
           touch .env
           echo CLIENT=pg >> .env
           echo DATABASE_URL=postgresql://dwiki:dwiki123@127.0.0.1:5432/car_db >> .env
+      - name: Display .env file
+        run: cat .env
       - name: Migrate database
         run: npx knex migrate:latest && npx knex seed:run
       - name: Test Coverage
