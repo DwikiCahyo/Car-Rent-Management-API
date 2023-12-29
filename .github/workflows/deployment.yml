@@ -13,6 +13,7 @@ jobs:
         env:
           POSTGRES_USER: dwiki
           POSTGRES_PASSWORD: dwiki123
+          POSTGRES_DB: car_db
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -25,6 +26,10 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install
         run: npm ci
+      - name: Run Database Query
+        run: |
+          RESULT=$(psql -h localhost -U postgres -d testdb -c "SELECT count(*) FROM your_table_name;" -tA)
+          echo "Number of rows in the table: $RESULT"
       - name: Create .env file
         run: |
           touch .env
