@@ -5,7 +5,7 @@ dotenv.config();
 
 // Update with your config settings.
 
-console.log(process.env.DATABASE_URL);
+console.log("test");
 
 export const config: Record<string, Knex.Config> = {
   development: {
