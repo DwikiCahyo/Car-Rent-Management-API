@@ -21,8 +21,8 @@ describe("test auth module", () => {
 
   it("should not  able to register if email already exists", async () => {
     const response = await supertest(app).post("/register").send({
-      email: `test@mail.com`,
-      password: "test123",
+      email: `user1@mail.com`,
+      password: "user123",
     });
     expect(response.statusCode).toBe(403);
     expect(response.body.message).toBe("Email already exist");

@@ -38,13 +38,13 @@ jobs:
         run: cat .env
       - name: Wait for Database
         run: sleep 10
-      - name: migration list
+      - name: Migration list
         run: npx knex migrate:list
-      - name: run migration
+      - name: Run migration
         run: npx knex migrate:latest
       - name: run seeding
         run: npx knex seed:run
-      - name: Test Coverage
+      - name: Test and Coverage
         run: npm run coverage
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run: flyctl deploy --remote-only
