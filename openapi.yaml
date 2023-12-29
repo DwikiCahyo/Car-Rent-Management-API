@@ -4,8 +4,6 @@ info:
   description: Rent car documentation api (1)
   version: 1.0.0
 servers:
-  - url: http://localhost:3000
-    description: Development Server
   - url: https://car-rent-management-api.fly.dev
     description: Production Server
 paths:
