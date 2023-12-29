@@ -1,4 +1,9 @@
-import { Express, NextFunction, Request, Response } from "express";
+import {
+  type Express,
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
 import UserService from "../service/users";
 import { authToken } from "../middleware/userAuth";
 
@@ -18,12 +23,12 @@ export default class UserController {
         authToken(req, res, next),
       (req: Request, res: Response) => this.getAllUser(req, res)
     );
-    this.app.get("/user", authToken, (req: Request, res: Response) =>
-      this.getUser(req, res)
-    );
   }
 
-  async getAllUser(req: Request, res: Response) {
+  async getAllUser(
+    req: Request,
+    res: Response
+  ): Promise<Response<any, Record<string, any>> | undefined> {
     try {
       const role = req.user?.role_id;
       res.locals.anyMssg = "G355I";
@@ -32,21 +37,6 @@ export default class UserController {
       }
       const user = await this.service.getAllUser();
       return res.status(200).json({ status: 200, data: user });
-    } catch (error) {
-      const errorMssg = (error as Error).message;
-      res.locals.errorMessage = errorMssg;
-      res.status(500).json({ err: 500 });
-    }
-  }
-
-  async getUser(req: Request, res: Response) {
-    try {
-      const role = req.user?.role_id;
-      if (!(role === 1 || role === 2)) {
-        return res.status(401).json({ message: "Access Unauthorized" });
-      }
-      const user = await this.service.getUser();
-      return res.status(200).json({ data: user });
     } catch (error) {
       const errorMssg = (error as Error).message;
       res.locals.errorMessage = errorMssg;

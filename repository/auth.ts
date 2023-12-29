@@ -1,9 +1,8 @@
 import * as bcrypt from "bcryptjs";
-import { Express, Request, Response, query } from "express";
-import { UserModel, Users } from "../model/users";
+import { UserModel, type Users } from "../model/users";
 
 export default class AuthRepository {
-  async registerUser(body: Users) {
+  async registerUser(body: Users): Promise<UserModel> {
     const { password } = body;
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
@@ -16,17 +15,17 @@ export default class AuthRepository {
     return user;
   }
 
-  async loginUser(body: Users) {
-    const { email, password } = body;
-    const user = await UserModel.query().findOne({ email: email });
+  async loginUser(body: Users): Promise<UserModel | undefined> {
+    const { email } = body;
+    const user = await UserModel.query().findOne({ email });
     return user;
   }
 
-  async updateRole(body: Users, id: string) {
+  async updateRole(body: Users, id: string): Promise<UserModel[] | null> {
     const userId = id;
     const reqBody = body.role_id;
     const checkId = await UserModel.query().findById(userId);
-    if (checkId) {
+    if (checkId != null) {
       const user = await UserModel.query()
         .findById(userId)
         .patch({ role_id: reqBody })

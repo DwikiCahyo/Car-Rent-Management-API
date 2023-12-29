@@ -7,10 +7,10 @@ dotenv.config();
 
 console.log(process.env.DATABASE_PRODUCTION);
 
-export const config: { [key: string]: Knex.Config } = {
+export const config: Record<string, Knex.Config> = {
   development: {
     client: "pg",
-    connection: process.env.DATABASE_PRODUCTION,
+    connection: process.env.DATABASE_DEVELOPMENT,
     pool: {
       min: 2,
       max: 10,

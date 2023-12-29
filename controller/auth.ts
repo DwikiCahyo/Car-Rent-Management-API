@@ -1,8 +1,16 @@
-import { UserModel, Users } from "../model/users";
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/promise-function-async */
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+import { UserModel, type Users } from "../model/users";
 import AuthService from "../service/auth";
-import { Express, Request, Response, NextFunction } from "express";
+import {
+  type Express,
+  type Request,
+  type Response,
+  type NextFunction,
+} from "express";
 import { authToken, checkEmail } from "../middleware/userAuth";
-import { validationResult } from "express-validator/src/validation-result";
 
 const TOKEN_SECRET = "ini adalah token saya yang saya test";
 
@@ -31,6 +39,7 @@ export default class AuthController {
       "/whoami",
       (req: Request, res: Response, next: NextFunction) =>
         authToken(req, res, next),
+      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
       (req: Request, res: Response) => this.whoAmI(req, res)
     );
 

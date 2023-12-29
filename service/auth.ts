@@ -1,4 +1,4 @@
-import { Users } from "../model/users";
+import { UserModel, type Users } from "../model/users";
 import AuthRepository from "../repository/auth";
 import * as bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -33,7 +33,7 @@ export default class AuthService {
       const data: dataLogin = {
         id: user.id,
         email: user.email,
-        token: token,
+        token,
       };
       return data;
     }
@@ -42,7 +42,7 @@ export default class AuthService {
     return errCredential;
   }
 
-  async updateRole(body: Users, id: string) {
+  async updateRole(body: Users, id: string): Promise<UserModel[] | string> {
     const userId = id;
     const user = await this.repository.updateRole(body, userId);
 
