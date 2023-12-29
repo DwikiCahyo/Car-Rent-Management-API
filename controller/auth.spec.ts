@@ -30,8 +30,8 @@ describe("test auth module", () => {
 
   it("should be able to login", async () => {
     const response = await supertest(app).post("/login").send({
-      email: `test@mail.com`,
-      password: "test123",
+      email: `user1@mail.com`,
+      password: "user123",
     });
     expect(response.statusCode).toBe(200);
     expectTypeOf(response.body.data).toMatchTypeOf<ResponseLogin>();
@@ -49,7 +49,7 @@ describe("test auth module", () => {
 
   it("should not able to login if password is not match", async () => {
     const response = await supertest(app).post("/login").send({
-      email: `test@mail.com`,
+      email: `user1@mail.com`,
       password: " ",
     });
     expect(response.statusCode).toBe(403);
