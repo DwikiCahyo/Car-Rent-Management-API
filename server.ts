@@ -32,7 +32,7 @@ class App {
 
     this.app.use(express.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
-    Model.knex(knex(config.development));
+    Model.knex(knex(config.production));
     morgan.token("logger", (req: Request, res: Response) => logger(req, res));
     this.app.use(morgan(":status :logger"));
     this.routes();
