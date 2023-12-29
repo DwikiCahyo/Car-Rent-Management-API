@@ -30,7 +30,7 @@ jobs:
           touch .env
           echo DATABASE_URL=postgres://dwiki:dwiki123@127.0.0.1:5432/postgres?schema=public >> .env
       - name: Migrate database
-        run: npm run knex migrate:latest && npm run knex seed:run
+        run: npx knex migrate:latest && npx knex seed:run
       - name: Test Coverage
         run: npm run coverage
       - uses: superfly/flyctl-actions/setup-flyctl@master
