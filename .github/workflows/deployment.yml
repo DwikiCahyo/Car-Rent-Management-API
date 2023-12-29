@@ -28,8 +28,7 @@ jobs:
         run: npm ci
       - name: Run Database Query
         run: |
-          RESULT=$(psql -h localhost -U postgres -d testdb -c "SELECT count(*) FROM your_table_name;" -tA)
-          echo "Number of rows in the table: $RESULT"
+          psql -h localhost -U dwiki -d car_db -c "SELECT 1;"
       - name: Create .env file
         run: |
           touch .env
