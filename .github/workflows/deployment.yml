@@ -25,6 +25,10 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install
         run: npm ci
+      - name: Create .env file
+        run: |
+          touch .env
+          echo DATABASE_URL=postgres://dwiki:dwiki123@127.0.0.1:5432/postgres?schema=public >> .env
       - name: Test Coverage
         run: npm run coverage
       - uses: superfly/flyctl-actions/setup-flyctl@master
