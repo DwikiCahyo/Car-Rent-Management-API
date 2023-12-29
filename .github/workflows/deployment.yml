@@ -39,8 +39,11 @@ jobs:
         run: cat .env
       - name: Wait for Database
         run: sleep 10
-      - name: Migrate database and Seed
-        run: npx knex migrate:latest
+      - name: Print Debug Information
+        run: |
+          echo "DATABASE_URL: $DATABASE_URL"
+          echo "PGPASSWORD: $PGPASSWORD"
+          npx knex migrate:latest
       - name: Test Coverage
         run: npm run coverage
       - uses: superfly/flyctl-actions/setup-flyctl@master
