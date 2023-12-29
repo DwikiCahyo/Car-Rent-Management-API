@@ -29,7 +29,7 @@ jobs:
         run: |
           touch .env
           echo CLIENT=pg >> .env
-          echo DATABASE_URL=jancok .env
+          echo DATABASE_URL=postgres://dwiki:dwiki123@127.0.0.1:5432/postgres?schema=public .env
       - name: Migrate database
         run: npx knex migrate:latest && npx knex seed:run
       - name: Test Coverage
