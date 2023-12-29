@@ -10,7 +10,7 @@ console.log(process.env.DATABASE_URL);
 export const config: Record<string, Knex.Config> = {
   development: {
     client: "pg",
-    connection: process.env.DATABASE_DEVELOPMENT,
+    connection: process.env.DATABASE_URL,
     pool: {
       min: 2,
       max: 10,

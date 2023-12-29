@@ -33,13 +33,17 @@ jobs:
       - name: Create .env file
         run: |
           touch .env
-          echo DATABASE_DEVELOPMENT=postgresql://dwiki:dwiki123@127.0.0.1:5432/car_db >> .env
+          echo DATABASE_URL=postgresql://dwiki:dwiki123@127.0.0.1:5432/car_db >> .env
       - name: Display .env file
         run: cat .env
       - name: Wait for Database
         run: sleep 10
       - name: migration list
         run: npx knex migrate:list
+      - name: run migration
+        run: npx knex migrate:latest
+      - name: run seeding
+        run: npx knex migrate:run
       - name: Test Coverage
         run: npm run coverage
       - uses: superfly/flyctl-actions/setup-flyctl@master
