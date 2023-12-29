@@ -28,7 +28,7 @@ jobs:
         run: npm ci
       - name: Run Database Query
         run: |
-          psql -h localhost -U dwiki -d car_db -c "SELECT 1;"
+          PGPASSWORD=dwiki123 psql -h localhost -U dwiki -d car_db -c "SELECT 1;"
       - name: Create .env file
         run: |
           touch .env
